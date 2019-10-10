@@ -20,5 +20,5 @@ def render_cell(value):
     # Is it within the range we care about?
     if not (min_timestamp < value < max_timestamp):
         return None
-    dt = datetime.datetime.fromtimestamp(value)
-    return dt.strftime("%B %d, %Y - %H:%M:%S")
+    dt = datetime.datetime.utcfromtimestamp(value)
+    return dt.strftime("%B %d, %Y - %H:%M:%S UTC")

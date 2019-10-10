@@ -2,7 +2,7 @@ from datasette_render_timestamps import render_cell
 
 
 def test_render_timestamps():
-    assert "October 10, 2019 - 00:18:29" == render_cell(1570691909)
+    assert "October 10, 2019 - 07:18:29 UTC" == render_cell(1570691909)
 
 
 def test_do_not_render_low_numbers():
