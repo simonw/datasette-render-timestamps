@@ -12,7 +12,7 @@ Install this plugin in the same environment as Datasette to enable this new func
 
     pip install datasette-render-timestamps
 
-The plugin will then look out for integer numbers that are likely to be timestamps (defaults to anything that would be a number of seconds from 5 years ago to 5 years in the future - this will be configurable eventually).
+The plugin will then look out for integer numbers that are likely to be timestamps - anything that would be a number of seconds from 5 years ago to 5 years in the future.
 
 These will then be rendered in a more readable format.
 
