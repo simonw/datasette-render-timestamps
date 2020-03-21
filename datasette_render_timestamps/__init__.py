@@ -17,7 +17,9 @@ default_format = "%B %d, %Y - %H:%M:%S UTC"
 @hookimpl()
 def render_cell(value, column, table, database, datasette):
     config = (
-        datasette.plugin_config("datasette-render-timestamps", database=database, table=table)
+        datasette.plugin_config(
+            "datasette-render-timestamps", database=database, table=table
+        )
         or {}
     )
     if "format" not in config:
