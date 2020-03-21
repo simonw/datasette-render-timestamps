@@ -43,3 +43,81 @@ def test_custom_format(timestamp_within_five_years):
             },
         ),
     )
+
+
+@pytest.mark.parametrize(
+    "metadata",
+    [
+        # Table level
+        {
+            "databases": {
+                "mydatabase": {
+                    "tables": {
+                        "mytable": {
+                            "plugins": {
+                                "datasette-render-timestamps": {
+                                    "format": "%Y-%m-%d %H:%M:%S",
+                                    "columns": ["timestamp"],
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        # Database level
+        {
+            "databases": {
+                "mydatabase": {
+                    "plugins": {
+                        "datasette-render-timestamps": {
+                            "format": "%Y-%m-%d %H:%M:%S",
+                            "columns": ["timestamp"],
+                        }
+                    }
+                }
+            }
+        },
+        # Global level
+        {
+            "plugins": {
+                "datasette-render-timestamps": {
+                    "format": "%Y-%m-%d %H:%M:%S",
+                    "columns": ["timestamp"],
+                }
+            }
+        },
+    ],
+)
+def test_explicit_column(metadata):
+    # Without metadata should be None
+    assert None == render_cell(
+        1286720309,
+        column="timestamp",
+        table="mytable",
+        database="mydatabase",
+        datasette=Datasette([]),
+    )
+    # With metadata should render correctly
+    assert "2010-10-10 14:18:29" == render_cell(
+        1286720309,
+        column="timestamp",
+        table="mytable",
+        database="mydatabase",
+        datasette=Datasette([], metadata=metadata),
+    )
+
+
+def test_disable_auto_detection_with_explicit_column_empty_list(
+    timestamp_within_five_years,
+):
+    # Without metadata should be None
+    assert None == render_cell(
+        timestamp_within_five_years,
+        column="timestamp",
+        table="mytable",
+        database="mydatabase",
+        datasette=Datasette(
+            [], metadata={"plugins": {"datasette-render-timestamps": {"columns": []}}}
+        ),
+    )

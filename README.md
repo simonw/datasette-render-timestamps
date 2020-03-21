@@ -18,12 +18,53 @@ These will then be rendered in a more readable format.
 
 ## Configuration
 
-The default format is `%B %d, %Y - %H:%M:%S UTC` which renders for example: `October 10, 2019 - 07:18:29 UTC`. If you want another format, the date format can be customized using a [plugin configuration](https://datasette.readthedocs.io/en/stable/plugins.html#plugin-configuration) in a `metadata.json` file. Any format string supported by [strftime](http://strftime.org/) may be used. For example:
+You can disable automatic column detection in favour of explicitly listing the columns that you would like to render using [plugin configuration](https://datasette.readthedocs.io/en/stable/plugins.html#plugin-configuration) in a `metadata.json` file.
 
+Add a `"datasette-render-timestamps"` configuration block and use a `"columns"` key to list the columns you would like to treat as timestamp values:
 
 ```json
 {
-    "title": "Regular metadata keys can go here too",
+    "plugins": {
+        "datasette-render-timestamps": {
+            "columns": ["created", "updated"]
+        }
+    }
+}
+```
+This will cause any `created` or `updated` columns in any table to be treated as timestamps and rendered.
+
+Save this to `metadata.json` and run datasette with the `--metadata` flag to load this configuration:
+
+    datasette serve mydata.db --metadata metadata.json
+
+To disable automatic timestamp detection entirely, you can use `"columnns": []`.
+
+This configuration block can be used at the top level, or it can be applied just to specific databases or tables. Here's how to apply it to just the `entries` table in the `news.db` database:
+
+```json
+{
+    "databases": {
+        "news": {
+            "tables": {
+                "entries": {
+                    "plugins": {
+                        "datasette-render-timestamps": {
+                            "columns": ["created", "updated"]
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+```
+
+### Customizing the date format
+
+The default format is `%B %d, %Y - %H:%M:%S UTC` which renders for example: `October 10, 2019 - 07:18:29 UTC`. If you want another format, the date format can be customized using plugin configuration. Any format string supported by [strftime](http://strftime.org/) may be used. For example:
+
+```json
+{
     "plugins": {
         "datasette-render-timestamps": {
             "format": "%Y-%m-%d-%H:%M:%S"
@@ -31,7 +72,3 @@ The default format is `%B %d, %Y - %H:%M:%S UTC` which renders for example: `Oct
     }
 }
 ```
-
-Run datasette with the `-m` flag to load the metadata config:
-
-    datasette serve mydata.db -m metadata.json

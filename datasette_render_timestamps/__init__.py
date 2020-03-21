@@ -26,8 +26,14 @@ def render_cell(value, column, table, database, datasette):
         config["format"] = default_format
     if not isinstance(value, int):
         return None
-    # Is it within the range we care about?
-    if not (min_timestamp < value < max_timestamp):
-        return None
+    columns = config.get("columns")
+    # If explicit columns were specified, use those
+    if columns is not None:
+        if column not in columns:
+            return None
+    else:
+        # Otherwise automatically detect timestamps
+        if not (min_timestamp < value < max_timestamp):
+            return None
     dt = datetime.datetime.utcfromtimestamp(value)
     return dt.strftime(config["format"])
