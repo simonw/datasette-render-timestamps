@@ -59,6 +59,22 @@ This configuration block can be used at the top level, or it can be applied just
 }
 ```
 
+And here's how to apply it to every `created` column in every table in the `news.db` database:
+
+```json
+{
+    "databases": {
+        "news": {
+            "plugins": {
+                "datasette-render-timestamps": {
+                    "columns": ["created", "updated"]
+                }
+            }
+        }
+    }
+}
+```
+
 ### Customizing the date format
 
 The default format is `%B %d, %Y - %H:%M:%S UTC` which renders for example: `October 10, 2019 - 07:18:29 UTC`. If you want another format, the date format can be customized using plugin configuration. Any format string supported by [strftime](http://strftime.org/) may be used. For example:
