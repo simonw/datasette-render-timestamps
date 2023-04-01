@@ -1,8 +1,10 @@
-from unittest import mock
-from datasette.app import Datasette
-from datasette_render_timestamps import render_cell
 import datetime
+from unittest import mock
+
 import pytest
+from datasette.app import Datasette
+
+from datasette_render_timestamps import render_cell
 
 
 @pytest.fixture
@@ -28,7 +30,67 @@ def test_do_not_render_high_numbers(timestamp_within_five_years):
     )
 
 
-def test_custom_format(timestamp_within_five_years):
+def test_ignore_strings():
+    assert None == render_cell(
+        "1286720309",
+        column="timestamp",
+        table="mytable",
+        database="mydatabase",
+        datasette=Datasette([]),
+    )
+
+
+def test_ignore_string_value_without_read_format():
+    assert None == render_cell(
+        "2023-03-31",
+        column="timestamp",
+        table="mytable",
+        database="mydatabase",
+        datasette=Datasette(
+            [],
+            metadata={
+                "plugins": {"datasette-render-timestamps": {"columns": ["timestamp"]}}
+            },
+        ),
+    )
+
+
+def test_ignore_string_no_column():
+    assert None == render_cell(
+        "2023-03-31",
+        column="timestamp",
+        table="mytable",
+        database="mydatabase",
+        datasette=Datasette(
+            [],
+            metadata={
+                "plugins": {"datasette-render-timestamps": {"read_format": "%Y-%m-%d"}}
+            },
+        ),
+    )
+
+
+def test_custom_read_format():
+    assert "March 31, 2023 - 00:00:00 UTC" == render_cell(
+        "2023-03-31",
+        column="timestamp",
+        table="mytable",
+        database="mydatabase",
+        datasette=Datasette(
+            [],
+            metadata={
+                "plugins": {
+                    "datasette-render-timestamps": {
+                        "read_format": "%Y-%m-%d",
+                        "columns": "timestamp",
+                    }
+                }
+            },
+        ),
+    )
+
+
+def test_custom_write_format(timestamp_within_five_years):
     assert "{}-10-10 07:18:29".format(datetime.date.today().year) == render_cell(
         timestamp_within_five_years,
         column="timestamp",

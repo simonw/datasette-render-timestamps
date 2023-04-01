@@ -33,7 +33,22 @@ Add a `"datasette-render-timestamps"` configuration block and use a `"columns"` 
 ```
 This will cause any `created` or `updated` columns in any table to be treated as timestamps and rendered.
 
-Save this to `metadata.json` and run datasette with the `--metadata` flag to load this configuration:
+Additionally, you can parse string columns as dates if you provide a `read_format` (a [strftime](http://strftime.org/) string) and name the column(s) explicitly. For example, this configuration:
+
+```json
+{
+    "plugins": {
+        "datasette-render-timestamps": {
+            "read_format": "%Y-%m-%d",
+            "columns": ["timestamp"]
+        }
+    }
+}
+```
+
+Would render `2023-03-31` in the `timestamp` column as `March 31, 2023 - 00:00:00 UTC`.
+
+Save any configuration to `metadata.json` and run datasette with the `--metadata` flag to load this configuration:
 
     datasette serve mydata.db --metadata metadata.json
 
